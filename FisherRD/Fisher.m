@@ -1,19 +1,19 @@
-% This program calculates approximate solutions to the Fisher
+% This program calculates approximate solutions to the Fisher-KPP
 % equation in 2D assuming periodic boundary conditions. We use 
 % a simple backward Euler IMEX scheme. Space is discretized via the
 % pseudo-spectral method. 
 %
 % In 1D the equation reads
 %
-%     phi_t = eps2*phi_xx-Logistic(phi),
+%     phi_t = eps2*phi_xx+Logistic(phi),
 %
 % The 2D version is analogous. The IMEX scheme is
 %
-%     phi^{k+1} - phi^k = dt*(eps2*phi^{k+1}_xx-Logistic(phi^k)),
+%     phi^{k+1} - phi^k = dt*(eps2*phi^{k+1}_xx+Logistic(phi^k)),
 %
 % or, in other words,
 %
-%     phi^{k+1}-eps2*phi^{k+1}_xx = phi^k-dt*Logistic(phi^k)
+%     phi^{k+1}-eps2*phi^{k+1}_xx = phi^k+dt*Logistic(phi^k)
 %
 %
 clear;
@@ -27,9 +27,9 @@ plotFrames = 50;
 maxSteps = stepsPerPlot*plotFrames;
 
 N = 256;
-eps2 = 2.000e-05;
+eps2 = 2.000e-06;
 ave  = 5.000e-01;
-cap  = 1.000e-02;
+rate = 1.000e-02;
 
 L = 1.0;
 
@@ -53,7 +53,7 @@ end
 %
 % Parameters:
 param.eps2 = eps2;
-param.cap  = cap;
+param.rate = rate;
 param.ave  = ave;
 param.L    = L;
 param.N    = N;
@@ -63,34 +63,8 @@ phi = zeros(N,N);
 for i = 1:N
   for j = 1:N
 %
-%    phi(i,j) = ave+0.05*(rand-0.5);
-%
-    if (xx(i,j)>0.15 && xx(i,j)<0.25) && ...
-        (yy(i,j)>0.15 && yy(i,j)<0.85)
-      phi(i,j) = 1.0;
-    end
-    if (xx(i,j)>0.75 && xx(i,j)<0.85) && ...
-        (yy(i,j)>0.15 && yy(i,j)<0.85)
-      phi(i,j) = 1.0;
-    end
-    if (xx(i,j)>0.15 && xx(i,j)<0.85) && ...
-        (yy(i,j)>0.75 && yy(i,j)<0.85)
-      phi(i,j) = 1.0;
-    end
-    if (xx(i,j)>0.35 && xx(i,j)<0.85) && ...
-        (yy(i,j)>0.15 && yy(i,j)<0.25)
-      phi(i,j) = 1.0;
-    end
-    if (xx(i,j)>0.35 && xx(i,j)<0.45) && ...
-        (yy(i,j)>0.15 && yy(i,j)<0.65)
-      phi(i,j) = 1.0;
-    end
-    if (xx(i,j)>0.35 && xx(i,j)<0.65) && ...
-        (yy(i,j)>0.55 && yy(i,j)<0.65)
-      phi(i,j) = 1.0;
-    end
-    if (xx(i,j)>0.55 && xx(i,j)<0.65) && ...
-        (yy(i,j)>0.35 && yy(i,j)<0.65)
+    if (xx(i,j)>0.40 && xx(i,j)<0.60) && ...
+        (yy(i,j)>0.45 && yy(i,j)<0.55)
       phi(i,j) = 1.0;
     end
 %
@@ -126,8 +100,7 @@ for k = 1:maxSteps
     fprintf('step : %6d       time : %8.3f \n', k, time)
   end
 %
-  fphi = Logistic(phi,param);
-  q = phi-dt*fphi;
+  q = phi+dt*Logistic(phi,param);
 %
   coef = 1.0-dt*eps2*lap;
 %
@@ -167,9 +140,9 @@ function [fphi] = Logistic(phi,param)
 %
 % The Logistic function reaction term.
 %
-cap = param.cap;
+rate = param.rate;
 %
-fphi = -phi.*(1.0-phi/cap);
+fphi = rate*phi.*(1.0-phi);
 %
 end % function Logistic
 
