@@ -2,7 +2,6 @@ function [phi] = initialCondition(param)
 %
 N = param.N;
 L = param.L;
-ratio = param.ratio;
 epsilon = param.epsilon;
 phiAve = param.phiAve;
 initType = param.initType;

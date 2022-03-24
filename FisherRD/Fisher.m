@@ -13,11 +13,12 @@
 %
 % or, in other words,
 %
-%     phi^{k+1}-eps2*phi^{k+1}_xx = phi^k+dt*Logistic(phi^k)
+%     phi^{k+1}-dt*eps2*phi^{k+1}_xx = phi^k+dt*Logistic(phi^k)
 %
 %
 clear;
 clc;
+clf;
 
 dt = 1.0e-01;
 stepsPerPlot = 500;

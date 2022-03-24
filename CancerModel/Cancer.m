@@ -19,12 +19,13 @@
 %
 % or, in other words,
 %
-%     phi^{k+1}+eps2*phi^{k+1}_xxxx+stabb*dt*phi^{k+1} 
+%     phi^{k+1}+dt*eps2*phi^{k+1}_xxxx+stabb*dt*phi^{k+1} 
 %         = phi^k+dt*(dF(phi^k))_xx+growth(phi^k)+stabb*dt*phi^k.
 %
 %
 clear;
 clc;
+clf;
 %
 dt = 2.0e-04;
 stepsPerPlot = 100;

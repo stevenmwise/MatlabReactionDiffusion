@@ -26,6 +26,7 @@
 %
 clear;
 clc;
+clf;
 initType = 2;
 %
 % Chen-Shen stabilization parameters:
@@ -86,15 +87,12 @@ switch initType
     error("Error in initType: No such initial conditon!")
 end
 %
-ratio = L/(2*pi);
-%
 param.L        = L;
 param.N        = N;
 param.epsilon  = epsilon;
 param.eta1     = eta1;
 param.eta2     = eta2;
 param.gamma    = gamma;
-param.ratio    = ratio;
 param.phiAve   = phiAve;
 param.initType = initType;
 %

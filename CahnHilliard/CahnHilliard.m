@@ -13,11 +13,12 @@
 %
 % or, in other words,
 %
-%     phi^{k+1}+eps2*phi^{k+1}_xxxx = phi^k+dt(dF(phi^k))_xx
+%     phi^{k+1}+dt*eps2*phi^{k+1}_xxxx = phi^k+dt(dF(phi^k))_xx
 %
 %
 clear;
 clc;
+clf;
 %
 dt = 2.0e-04;
 stepsPerPlot = 100;
