@@ -1,37 +1,40 @@
-% This program calculates approximate solutions to the Brusselator
+% This program calculates approximate solutions to the Schnakenberg
 % system in 2D assuming periodic boundary conditions. We use 
 % a simple backward Euler IMEX scheme. Space is discretized via the
 % pseudo-spectral method. This system experiences Turing instability
 % whenever
 %
-%     k1 > (1+c1*sqrt(D1/D2))^2.
 %
-% See the reaction terms Bruss1 and Bruss2 below.
+%
+% See the reaction terms Schnak1 and Schnak2 below.
 %
 % In 1D the system reads
 %
-%     phi_t = D1*phi_xx+Bruss1(phi,psi),
+%     phi_t = D1*(phi_xx+phi_yy)+Schnak1(phi,psi),
 %
-%     psi_t = D2*psi_xx+Bruss2(phi,psi),
+%     psi_t = D2*(psi_xx+psi_yy)+Schnak2(phi,psi),
 %
 % where
 %
-%     Bruss1(phi,psi) = phi.*phi.*psi+c1-(k1+1)*phi,
+%     Schnak1(phi,psi) =  phi.*phi.*psi-phi+(b-a)/2.0,
 %
-%     Bruss2(phi,psi) = -phi.*phi.*psi+k1*phi.
+%     Schnak2(phi,psi) = -phi.*phi.*psi+(b+a)/2.0.
 %
-% The 2D version is analogous. See the book
+% See the paper
 %
-% T. Sauer, "Numerical Analysis," third edition, Pearson, 
-%     Hoboken, NJ (2019), Section 8.4.2. 
+% H.K. Khudhair, Y. Zhang, N. Fukawa, "Pattern Selection in the
+%   Schnakenberg equations: From normal to anomalous diffusion,"
+%   Numer. Method. Partial Diff. Eq. (2021).
+%   https://doi.org/10.1002/num.22842
+%
 % 
 % for more details. The IMEX scheme employed here is
 %
 %     phi^{k+1} - phi^k = dt*(D1*phi^{k+1}_xx
-%                        + Bruss1(phi^k,psi^k)),
+%                        + Schnak1(phi^k,psi^k)),
 %
 %     psi^{k+1} - psi^k = dt*(D2*psi^{k+1}_xx
-%                        + Bruss2(phi^{k+1},psi^k)).
+%                        + Schnak2(phi^{k+1},psi^k)).
 %
 %
 clear;
@@ -44,12 +47,12 @@ stepsPerReport = 100;
 plotFrames = 50;
 maxSteps = stepsPerPlot*plotFrames;
 
-N  = 128;
-D1 = 1.000e+00;
-D2 = 8.000e+00;
-k1 = 1.000e+01;
-c1 = 4.500e+00;
-L  = 4.000e+01;
+N  = 256;
+D1 = 1.000e-02;
+D2 = 1.000e+00;
+a  = 3.200e+00;
+b  = 3.500e+00;
+L  = 8.000e+00;
 
 % Grid and laplacian matrices:
 kx = 2.0*pi*[0:N/2-1 N/2 -N/2+1:-1]/L;
@@ -73,8 +76,8 @@ end
 
 param.D1 = D1;
 param.D2 = D2;
-param.k1 = k1;
-param.c1 = c1;
+param.a = a;
+param.b = b;
 param.L  = L;
 param.N  = N;
 %
@@ -84,8 +87,8 @@ psi = zeros(N,N);
 for i = 1:N
   for j = 1:N
 %
-    phi(i,j) = c1+0.1;
-    psi(i,j) = k1/c1+0.2+0.01*(rand-0.5);
+    phi(i,j) = b;
+    psi(i,j) = (a+b)/(2.0*b*b)+0.01*(rand-0.5);
 %
   end
 end
@@ -119,13 +122,13 @@ for k = 1:maxSteps
     fprintf('step : %6d       time : %8.3f \n', k, time)
   end
 %
-  q = phi+dt*Bruss1(phi,psi,param);
+  q = phi+dt*Schnak1(phi,psi,param);
 %
   coef = 1.0-dt*D1*lap;
 %
   phi = real(ifft2(fft2(q)./coef));
 %
-  q = psi+dt*Bruss2(phi,psi,param);
+  q = psi+dt*Schnak2(phi,psi,param);
 %
   coef = 1.0-dt*D2*lap;
 %
@@ -138,7 +141,7 @@ for k = 1:maxSteps
     shading interp; 
     colormap(jet);
     colorbar;
-    title(['Brusselator-IMEX: dt = ',num2str(dt), ...
+    title(['Schnakenberg-IMEX: dt = ',num2str(dt), ...
       '  time = ',num2str(time)]);
     getframe;
   end
@@ -162,20 +165,21 @@ disp('program done')
 %
 % Embedded function(s) below:
 %
-function [fphi] = Bruss1(phi,psi,param)
+function [fphi] = Schnak1(phi,psi,param)
 %
-k1 = param.k1;
-c1 = param.c1;
+a = param.a;
+b = param.b;
 %
-fphi = phi.*phi.*psi+c1-(k1+1)*phi;
+fphi =  phi.*phi.*psi-phi+(b-a)/2.0;
 %
-end % function Bruss1
+end % function Schnak1
 %
-function [fphi] = Bruss2(phi,psi,param)
+function [fphi] = Schnak2(phi,psi,param)
 %
-k1 = param.k1;
+a = param.a;
+b = param.b;
 %
-fphi = -phi.*phi.*psi+k1*phi;
+fphi = -phi.*phi.*psi    +(b+a)/2.0;
 %
-end % function Bruss2
+end % function Schnak2
 
