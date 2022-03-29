@@ -118,18 +118,9 @@ end
 % Get initial condition
 [phi] = initialCondition(param);
 %
-% Print initial data:
+% Print out initial frame:
 %
-s1 = ['0000000' num2str(0)];
-s2 = s1((length(s1)-4):length(s1));
-fid = fopen(['./OUT/phi',s2,'.dat'],'w');
-fprintf(fid,'%25.15e %25.15e %10i %25.15e\n',0,dt,N,L);
-for j = 1:N
-  for i = 1:N
-    fprintf(fid,'%25.15e\n',phi(i,j));
-  end
-end
-fclose(fid);
+printField('phi',phi,0,dt,0,param)
 %
 figure(1);
 pcolor(xx,yy,phi);
@@ -177,19 +168,30 @@ for k = 1:maxSteps
 %
   if (mod(k,stepsPerPlot) == 0)
 %
-    s1 = ['0000000' num2str(round(k/stepsPerPlot))];
-    s2 = s1((length(s1)-4):length(s1));
-    fid = fopen(['./OUT/phi',s2,'.dat'],'w');
-    fprintf(fid,'%25.15e %25.15e %10i %25.15e\n',time,dt,N,L);
-    for j = 1:N
-      for i = 1:N
-        fprintf(fid,'%25.15e\n',phi(i,j));
-      end
-    end
-    fclose(fid);
+    frame = round(k/stepsPerPlot);
+    printField('phi',phi,frame,dt,time,param)
+%
   end
 end
 %
 disp('program done')
+%
+function [ ] = printField(fieldName,fieldArray,frame,dt,time,param)
+%
+N = param.N;
+L = param.L;
+%
+s1 = ['0000000' num2str(frame)];
+s2 = s1((length(s1)-4):length(s1));
+fid = fopen(['./OUT/',fieldName,s2,'.dat'],'w');
+fprintf(fid,'%25.15e %25.15e %10i %25.15e\n',time,dt,N,L);
+for j = 1:N
+  for i = 1:N
+    fprintf(fid,'%25.15e\n',fieldArray(i,j));
+  end
+end
+fclose(fid);
+%
+end % function printField
 
 

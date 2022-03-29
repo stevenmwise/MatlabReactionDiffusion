@@ -19,21 +19,20 @@
 clear;
 clc;
 clf;
-
+%
 dt = 1.0e-01;
 stepsPerPlot = 500;
 stepsPerScreenPlot = 50;
 stepsPerReport = 100;
 plotFrames = 50;
 maxSteps = stepsPerPlot*plotFrames;
-
+%
 N = 256;
 eps2 = 2.000e-06;
 ave  = 5.000e-01;
-rate = 1.000e-02;
-
+rate = 2.000e-02;
 L = 1.0;
-
+%
 % Grid and laplacian matrices:
 kx = 2.0*pi*[0:N/2-1 N/2 -N/2+1:-1]/L;
 ky = 2.0*pi*[0:N/2-1 N/2 -N/2+1:-1]/L;
@@ -68,22 +67,18 @@ for i = 1:N
         (yy(i,j)>0.45 && yy(i,j)<0.55)
       phi(i,j) = 1.0;
     end
+    if (xx(i,j)>0.55 && xx(i,j)<0.60) && ...
+        (yy(i,j)>0.35 && yy(i,j)<0.65)
+      phi(i,j) = 1.0;
+    end
 %
   end
 end
 %
 % Print out initial frame:
-s1 = ['0000000' num2str(0)];
-s2 = s1((length(s1)-4):length(s1));
-fid = fopen(['./OUT/phi',s2,'.dat'],'w');
-fprintf(fid,'%25.15e %25.15e %10i %25.15e\n',0,dt,N,L);
-for j = 1:N
-  for i = 1:N
-    fprintf(fid,'%25.15e\n',phi(i,j));
-  end
-end
-fclose(fid);
-
+%
+printField('phi',phi,0,dt,0,param)
+%
 figure(1);
 pcolor(xx,yy,phi);
 axis equal;
@@ -92,7 +87,7 @@ colormap(jet);
 title('Initial Conditions');
 colorbar;
 getframe;
-
+%
 for k = 1:maxSteps
 %
   time = k*dt;
@@ -120,17 +115,11 @@ for k = 1:maxSteps
 %
   if (mod(k,stepsPerPlot) == 0)
 %
-    s1 = ['0000000' num2str(round(k/stepsPerPlot))];
-    s2 = s1((length(s1)-4):length(s1));
-    fid = fopen(['./OUT/phi',s2,'.dat'],'w');
-    fprintf(fid,'%25.15e %25.15e %10i %25.15e\n',time,dt,N,L);
-    for j = 1:N
-      for i = 1:N
-        fprintf(fid,'%25.15e\n',phi(i,j));
-      end
-    end
-    fclose(fid);
+    frame = round(k/stepsPerPlot);
+    printField('phi',phi,frame,dt,time,param)
+%
   end
+%
 end
 %
 disp('program done')
@@ -146,4 +135,22 @@ rate = param.rate;
 fphi = rate*phi.*(1.0-phi);
 %
 end % function Logistic
+%
+function [ ] = printField(fieldName,fieldArray,frame,dt,time,param)
+%
+N = param.N;
+L = param.L;
+%
+s1 = ['0000000' num2str(frame)];
+s2 = s1((length(s1)-4):length(s1));
+fid = fopen(['./OUT/',fieldName,s2,'.dat'],'w');
+fprintf(fid,'%25.15e %25.15e %10i %25.15e\n',time,dt,N,L);
+for j = 1:N
+  for i = 1:N
+    fprintf(fid,'%25.15e\n',fieldArray(i,j));
+  end
+end
+fclose(fid);
+%
+end % function printField
 
