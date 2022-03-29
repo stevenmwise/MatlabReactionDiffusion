@@ -22,14 +22,14 @@ clf;
 %
 dt = 1.0e-01;
 stepsPerPlot = 500;
-stepsPerScreenPlot = 50;
+stepsPerScreenPlot = 100;
 stepsPerReport = 50;
 plotFrames = 50;
 maxSteps = stepsPerPlot*plotFrames;
 
 N = 256;
 eps2 = 2.000e-05;
-ave  = 5.000e-01;
+mid  = 5.000e-01;
 
 L = 1.0;
 
@@ -53,7 +53,7 @@ end
 %
 % Parameters:
 param.eps2 = eps2;
-param.ave  = ave;
+param.mid  = mid;
 param.L    = L;
 param.N    = N;
 %
@@ -62,7 +62,7 @@ phi = zeros(N,N);
 for i = 1:N
   for j = 1:N
 %
-%    phi(i,j) = ave+0.05*(rand-0.5);
+%    phi(i,j) = mid+0.05*(rand-0.5);
 %
     if (xx(i,j)>0.15 && xx(i,j)<0.25) && ...
         (yy(i,j)>0.15 && yy(i,j)<0.85)
@@ -166,7 +166,9 @@ function [fphi] = Allee(phi,param)
 %
 % The Allee function reaction term.
 %
-fphi = phi.*(phi-0.5).*(phi-1.0);
+mid = param.mid;
+%
+fphi = phi.*(phi-mid).*(phi-1.0);
 %
 end % function Allee
 
