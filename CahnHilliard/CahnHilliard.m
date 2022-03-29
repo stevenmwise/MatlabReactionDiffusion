@@ -20,7 +20,7 @@ clear;
 clc;
 clf;
 %
-dt = 2.0e-04;
+dt = 1.0e-04;
 stepsPerPlot = 100;
 stepsPerScreenPlot = 10;
 stepsPerReport = 100;
