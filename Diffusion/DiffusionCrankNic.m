@@ -78,8 +78,6 @@ function [error] = DiffusionCrankNic(finalT, N, K, numPlots)
       uCN(N+1) = 0.0;
       uoCN = uCN;
     end
-    hf  = figure(k);
-    clf
     plot(x,uExact(N,currTime),'k-',x,uCN,'b-o')
     grid on, 
     xlabel("x");
@@ -89,6 +87,7 @@ function [error] = DiffusionCrankNic(finalT, N, K, numPlots)
         ', and tau =', num2str(tau)]);
     legend("Exact","Crank--Nicolson")
     set(gca,"xTick",0:0.1:1)
+    axis([0 1 -1.75 1.75])
     
     s1 = ['000', num2str(k)];
     s2 = s1((length(s1)-3):length(s1));
