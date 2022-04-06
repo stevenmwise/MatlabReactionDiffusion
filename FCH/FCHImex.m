@@ -40,6 +40,7 @@ stepsPerScreenPlot = 1000;
 stepsPerReport = 100;
 plotFrames = 100;
 maxSteps = stepsPerPlot*plotFrames;
+phiAve = 0.0;
 %
 switch initType
   case 1
@@ -58,7 +59,7 @@ switch initType
     eta1 = 5.0*epsilon;
     eta2 = 3.0*epsilon;
     gamma = 0.0;
-    phiAve = -0.4;
+    phiAve = 0.5;
   case {3, 4}
     M = 1.0;
     L = 12.8;
