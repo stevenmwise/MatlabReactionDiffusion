@@ -4,8 +4,6 @@
 % pseudo-spectral method. This system experiences Turing instability
 % whenever
 %
-%
-%
 % See the reaction terms Schnak1 and Schnak2 below.
 %
 % In 1D the system reads
@@ -30,10 +28,10 @@
 % 
 % for more details. The IMEX scheme employed here is
 %
-%     phi^{k+1} - phi^k = dt*(D1*phi^{k+1}_xx
+%     phi^{k+1} - phi^k = dt*(D1*(phi^{k+1}_xx+phi^{k+1}_yy)
 %                        + Schnak1(phi^k,psi^k)),
-%
-%     psi^{k+1} - psi^k = dt*(D2*psi^{k+1}_xx
+%(
+%     psi^{k+1} - psi^k = dt*(D2*(psi^{k+1}_xx+psi^{k+1}_yy)
 %                        + Schnak2(phi^{k+1},psi^k)).
 %
 %
@@ -47,7 +45,7 @@ stepsPerReport = 100;
 plotFrames = 50;
 maxSteps = stepsPerPlot*plotFrames;
 
-N  = 256;
+N  = 128;
 D1 = 1.000e-02;
 D2 = 1.000e+00;
 a  = 3.200e+00;
@@ -96,13 +94,23 @@ end
 % Print out initial frame:
 %
 printField('phi',phi,0,dt,0,param)
+printField('psi',phi,0,dt,0,param)
 %
 figure(1);
 pcolor(xx,yy,phi);
 axis equal;
 shading interp;
 colormap(jet);
-title('Initial Conditions');
+title('Initial Conditions: phi');
+colorbar;
+getframe;
+%
+figure(2);
+pcolor(xx,yy,phi);
+axis equal;
+shading interp;
+colormap(jet);
+title('Initial Conditions: psi');
 colorbar;
 getframe;
 
@@ -133,7 +141,17 @@ for k = 1:maxSteps
     shading interp; 
     colormap(jet);
     colorbar;
-    title(['Schnakenberg-IMEX: dt = ',num2str(dt), ...
+    title(['Schnakenberg-IMEX, phi: dt = ',num2str(dt), ...
+      '  time = ',num2str(time)]);
+    getframe;
+%
+    figure(2);
+    pcolor(xx,yy,psi);
+    axis equal
+    shading interp; 
+    colormap(jet);
+    colorbar;
+    title(['Schnakenberg-IMEX, psi: dt = ',num2str(dt), ...
       '  time = ',num2str(time)]);
     getframe;
   end
@@ -142,6 +160,7 @@ for k = 1:maxSteps
 %
     frame = round(k/stepsPerPlot);
     printField('phi',phi,frame,dt,time,param)
+    printField('psi',psi,frame,dt,time,param)
 %
   end
 end

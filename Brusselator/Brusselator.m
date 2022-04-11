@@ -10,13 +10,13 @@
 %
 % In 1D the system reads
 %
-%     phi_t = D1*phi_xx+Bruss1(phi,psi),
+%     phi_t = D1*(phi_xx+phi_yy)+Bruss1(phi,psi),
 %
-%     psi_t = D2*psi_xx+Bruss2(phi,psi),
+%     psi_t = D2*(psi_xx+psi_yy)+Bruss2(phi,psi),
 %
 % where
 %
-%     Bruss1(phi,psi) = phi.*phi.*psi+c1-(k1+1)*phi,
+%     Bruss1(phi,psi) =  phi.*phi.*psi+c1-(k1+1)*phi,
 %
 %     Bruss2(phi,psi) = -phi.*phi.*psi+k1*phi.
 %
@@ -27,27 +27,27 @@
 % 
 % for more details. The IMEX scheme employed here is
 %
-%     phi^{k+1} - phi^k = dt*(D1*phi^{k+1}_xx
+%     phi^{k+1} - phi^k = dt*(D1*(phi^{k+1}_xx+phi^{k+1}_yy)
 %                        + Bruss1(phi^k,psi^k)),
 %
-%     psi^{k+1} - psi^k = dt*(D2*psi^{k+1}_xx
+%     psi^{k+1} - psi^k = dt*(D2*(psi^{k+1}_xx+psi^{k+1}_yy)
 %                        + Bruss2(phi^{k+1},psi^k)).
 %
 %
 clear;
 clc;
 
-dt = 1.0e-02;
+dt = 2.0e-02;
 stepsPerPlot = 500;
 stepsPerScreenPlot = 50;
 stepsPerReport = 100;
 plotFrames = 50;
 maxSteps = stepsPerPlot*plotFrames;
 
-N  = 128;
+N  = 64;
 D1 = 1.000e+00;
 D2 = 8.000e+00;
-k1 = 1.000e+01;
+k1 = 0.700e+01;
 c1 = 4.500e+00;
 L  = 4.000e+01;
 
@@ -93,13 +93,23 @@ end
 % Print out initial frame:
 %
 printField('phi',phi,0,dt,0,param)
+printField('psi',psi,0,dt,0,param)
 %
 figure(1);
 pcolor(xx,yy,phi);
 axis equal;
 shading interp;
 colormap(jet);
-title('Initial Conditions');
+title('Initial Conditions: phi');
+colorbar;
+getframe;
+%
+figure(2);
+pcolor(xx,yy,psi);
+axis equal;
+shading interp;
+colormap(jet);
+title('Initial Conditions: psi');
 colorbar;
 getframe;
 
@@ -130,7 +140,17 @@ for k = 1:maxSteps
     shading interp; 
     colormap(jet);
     colorbar;
-    title(['Brusselator-IMEX: dt = ',num2str(dt), ...
+    title(['Brusselator-IMEX, phi: dt = ',num2str(dt), ...
+      '  time = ',num2str(time)]);
+    getframe;
+%
+    figure(2);
+    pcolor(xx,yy,psi);
+    axis equal
+    shading interp; 
+    colormap(jet);
+    colorbar;
+    title(['Brusselator-IMEX, psi: dt = ',num2str(dt), ...
       '  time = ',num2str(time)]);
     getframe;
   end
@@ -139,6 +159,7 @@ for k = 1:maxSteps
 %
     frame = round(k/stepsPerPlot);
     printField('phi',phi,frame,dt,time,param)
+    printField('psi',psi,frame,dt,time,param)
 %
   end
 %
